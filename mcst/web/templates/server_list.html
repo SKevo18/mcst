@@ -31,7 +31,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for record in server.records %}
+                                {% set records = server.records[:10]|list %}
+                                {% for record in records %}
                                     <tr>
                                         <td>{{ record.timestamp }}</td>
                                         <td>{{ record.online_players }} / {{ record.max_players }}</td>
