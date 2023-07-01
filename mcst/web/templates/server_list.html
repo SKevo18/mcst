@@ -13,14 +13,53 @@
         </thead>
         <tbody>
             {% for server in data %}
-            <tr>
-                <td>{{ server["ip_port"] }}</td>
-                <td>{{ server["discovered_at"] }}</td>
-                <td>{% if '//' in server["source"] %}<a href="{{ server['source'] }}">{{ server["source"].split('/')[2] }}</a>{% else %}{{ server["source"] }}{% endif %}</td>
-                <td>{{ server["type"] }}</td>
-            </tr>
+                <tr class="parent">
+                    <td>{{ server.ip_port }}</td>
+                    <td>{{ server.discovered_at }}</td>
+                    <td>{% if '//' in server.source %}<a href="{{ server.source }}">{{ server.source.split('/')[2] }}</a>{% else %}{{ server.source }}{% endif %}</td>
+                    <td>{{ server.type }}</td>
+                </tr>
+
+                {% if server.records %}
+                <tr class="sub-row" style="display: none;">
+                    <td colspan="4">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Pinged At</th>
+                                    <th>Online Players / Max</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in server.records %}
+                                    <tr>
+                                        <td>{{ record.timestamp }}</td>
+                                        <td>{{ record.online_players }} / {{ record.max_players }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                {% endif %}
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        let mainRows = document.querySelectorAll('.parent');
+    
+        mainRows.forEach((mainRow) => {
+            mainRow.addEventListener('click', function() {
+                let subRow = this.nextElementSibling;
+
+                if (subRow.classList.contains("sub-row")) {
+                    subRow.style.display = subRow.style.display === 'none' ? 'table-row' : 'none';
+                }
+            });
+        });
+    });
+</script>    
 {% endblock content %}
