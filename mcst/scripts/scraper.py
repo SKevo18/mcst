@@ -114,8 +114,6 @@ class MinecraftServerScrapper:
 
 
 
-
-
 class MinecraftServers_org_Scrapper(MinecraftServerScrapper):
     url_template = "https://minecraftservers.org/index/{page}"
     source = "https://minecraftservers.org"

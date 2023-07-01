@@ -89,6 +89,7 @@ async def ping_all_and_save(at_once: int=200, verbose: bool=True):
 
             print("Committing...")
             session.commit()
+            print("Ok!")
 
 
 
