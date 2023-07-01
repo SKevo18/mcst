@@ -1,0 +1,26 @@
+{% extends "_base.html" %}
+
+{% block content %}
+<div class="table-scroll-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Hostname</th>
+                <th>Discovered at</th>
+                <th>Source</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for server in data %}
+            <tr>
+                <td>{{ server["ip_port"] }}</td>
+                <td>{{ server["discovered_at"] }}</td>
+                <td>{% if '//' in server["source"] %}<a href="{{ server['source'] }}">{{ server["source"].split('/')[2] }}</a>{% else %}{{ server["source"] }}{% endif %}</td>
+                <td>{{ server["type"] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

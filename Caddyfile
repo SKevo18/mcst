@@ -1,0 +1,10 @@
+mcst.svit.ac {
+    encode zstd gzip
+    root * /<YOUR_PATH>
+
+    reverse_proxy unix//<YOUR_PATH>/webapp.sock
+
+    file_server browse {
+        hide .*
+    }
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCST</title>
+
+    <style>
+        body {
+            background-color: black;
+            color: gainsboro;
+        }
+
+        a {
+            color: lightblue;
+        }
+
+        .table-scroll-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+            border: 2px double gray;
+        }
+
+        table th, table td {
+            border: 1px solid gray;
+            text-align: center;
+            padding: 8px;
+            min-width: 100px;
+        }
+
+        table th {
+            font-weight: bold;
+        }
+
+        table td {
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    {% block content %}{% endblock content %}
+</body>
+</html>

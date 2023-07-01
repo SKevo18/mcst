@@ -1,0 +1,10 @@
+beautifulsoup4
+requests
+
+mcstatus
+
+sqlalchemy>=2
+pymysql
+asyncmy
+
+flask
