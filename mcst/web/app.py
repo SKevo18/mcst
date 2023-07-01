@@ -1,6 +1,6 @@
 import typing as t
 
-from flask import Flask, render_template, url_for, abort, request
+from flask import Flask, render_template, abort, request
 
 from sqlalchemy import or_, Column, ColumnElement, ColumnExpressionArgument, BinaryExpression
 from sqlalchemy.orm import Session
@@ -24,12 +24,9 @@ def create_filter(model: t.Type[DBBase], request_args: dict[str, str], blacklist
 
 
 
-def _generic_list(model: t.Type[DBBase], template_file: str, order_by: ColumnExpressionArgument[t.Any], page: int=1, per_page: int=500) -> str:
+def _generic_list(model: t.Type[DBBase], template_file: str, filter: ColumnElement[bool], order_by: ColumnExpressionArgument[t.Any], page: int=1, per_page: int=500) -> str:
     if page < 1:
         abort(400, "Page number cannot be less than 1.")
-
-
-    filter = create_filter(model, request.args)
 
     with Session(ENGINE) as session:
         results = session.execute(session.query(model).filter(filter).order_by(order_by).limit(per_page).offset(per_page * (page - 1))).scalars()
@@ -41,10 +38,25 @@ def _generic_list(model: t.Type[DBBase], template_file: str, order_by: ColumnExp
 @WEB.get("/")
 @WEB.get("/<int:page>")
 def server_list(page: int=1):
-    return _generic_list(Server, "server_list.html", order_by=Server.discovered_at.desc(), page=page)
+    return _generic_list(
+        Server, "server_list.html", create_filter(Server, request.args),
+        order_by=Server.discovered_at.desc(), page=page
+    )
 
 
 @WEB.get("/records")
 @WEB.get("/records/<int:page>")
 def records_list(page: int=1):
-    return _generic_list(Record, "records_list.html", order_by=Record.timestamp.desc(), page=page)
+    return _generic_list(
+        Record, "records_list.html", create_filter(Server, request.args, blacklist=["players"]),
+        order_by=Record.timestamp.desc(), page=page
+    )
+
+
+@WEB.get("/players")
+@WEB.get("/players/<int:page>")
+def players_list(page: int=1):
+    return _generic_list(
+        Player, "players_list.html", create_filter(Player, request.args),
+        order_by=Player.username, page=page
+    )

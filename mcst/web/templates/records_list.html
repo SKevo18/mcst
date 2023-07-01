@@ -18,7 +18,7 @@
                 <td width="270px;">{{ record["server_id"] }}</td>
                 <td width="175px;">{{ record["timestamp"] }}</td>
                 <td width="50px;">{{ record["online_players"] }} / {{ record["max_players"] }}</td>
-                <td style="max-width: 125px;">{% if players|length > 0 %}{{ players|join(", ", attribute='username') }}{% else %}N/A{% endif %}</td>
+                <td style="max-width: 300px;">{% if players|length > 0 %}{{ players|join(", ", attribute='username') }}{% else %}N/A{% endif %}</td>
             </tr>
             {% endfor %}
         </tbody>
