@@ -1,0 +1,27 @@
+{% extends "_base.html" %}
+
+{% from "_macros.html" import server_anchor, records_table, players_table %}
+
+{% block content %}
+<div class="table-scroll-wrapper">
+    <fieldset>
+        <legend>Server Information</legend>
+        <p><strong>IP and Port:</strong> {{ result.ip_port }}</p>
+        <p><strong>Source:</strong> <a href="{{ result.source }}">{{ result.source }}</a></p>
+        <p><strong>Type:</strong> {{ result.type }}</p>
+    </fieldset>
+
+    <fieldset>
+        <legend>Server Records</legend>
+
+        {{ records_table(result.records, show_server_col=false) }}
+    </fieldset>
+
+    {% if result.players %}
+    <fieldset>
+        <legend>Players</legend>
+        {{ players_table(result.players) }}
+    </fieldset>
+    {% endif %}
+</div>
+{% endblock content %}

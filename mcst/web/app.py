@@ -10,6 +10,7 @@ from mcst.database.models import DBBase, Server, Record, Player
 
 
 WEB = Flask(__name__)
+WEB.jinja_env.add_extension('jinja2.ext.do')
 
 
 def create_filter(model: t.Type[DBBase], request_args: dict[str, str], blacklist: list[str]=[]) -> ColumnElement[bool]:
@@ -24,14 +25,26 @@ def create_filter(model: t.Type[DBBase], request_args: dict[str, str], blacklist
 
 
 
-def _generic_list(model: t.Type[DBBase], template_file: str, filter: ColumnElement[bool], order_by: ColumnExpressionArgument[t.Any], page: int=1, per_page: int=500) -> str:
+def _generic_list(model: t.Type[DBBase], template_file: str, filter: ColumnElement[bool], order_by: ColumnExpressionArgument[t.Any], page: int=1, per_page: int=100) -> str:
     if page < 1:
         abort(400, "Page number cannot be less than 1.")
 
     with Session(ENGINE) as session:
         results = session.execute(session.query(model).filter(filter).order_by(order_by).limit(per_page).offset(per_page * (page - 1))).scalars()
 
-        return render_template(template_file, data=results, current_page=page)
+        return render_template(template_file, result=results, current_page=page)
+
+
+
+def _generic_one(model: t.Type[DBBase], template_file: str, *filter) -> str:
+    with Session(ENGINE) as session:
+        server = session.query(model).filter(*filter).one_or_none()
+
+        if server is None:
+            abort(404, f"{type(model).__name__} with `{filter}` is not tracked (yet).")
+
+
+        return render_template(template_file, result=server)
 
 
 
@@ -44,6 +57,12 @@ def server_list(page: int=1):
     )
 
 
+@WEB.get("/<string:server_host>")
+def server(server_host: str):
+    return _generic_one(Server, "server.html", Server.ip_port == server_host)
+
+
+
 @WEB.get("/records")
 @WEB.get("/records/<int:page>")
 def records_list(page: int=1):
@@ -53,6 +72,7 @@ def records_list(page: int=1):
     )
 
 
+
 @WEB.get("/players")
 @WEB.get("/players/<int:page>")
 def players_list(page: int=1):
@@ -60,3 +80,8 @@ def players_list(page: int=1):
         Player, "players_list.html", create_filter(Player, request.args),
         order_by=Player.username, page=page
     )
+
+
+@WEB.get("/player/<string:player_uuid>")
+def player(player_uuid: str):
+    return _generic_one(Player, "player.html", Player.uuid == player_uuid)

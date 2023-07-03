@@ -11,11 +11,11 @@
             </tr>
         </thead>
         <tbody>
-            {% for player in data %}
+            {% for player in result %}
             <tr>
-                <td>{{ player["uuid"] }}</td>
-                <td width="250px;">{{ player["username"] }}</td>
-                <td width="175px;">{{ player["first_seen_at"] }}</td>
+                <td>{{ player.uuid }}</td>
+                <td>{{ player.username }}</td>
+                <td>{{ player.first_seen_at }}</td>
             </tr>
             {% endfor %}
         </tbody>

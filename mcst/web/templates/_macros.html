@@ -1,0 +1,84 @@
+{% macro server_anchor(server) %}
+<a href="{{ url_for('server', server_host=server.ip_port) }}">{{ server.name }}</a>
+{% endmacro %}
+
+{% macro player_anchor(player) %}
+<a href="{{ url_for('player', player_uuid=player.uuid) }}">{{ player.username }}</a>
+{% endmacro %}
+
+{% macro player_list(players) %}
+    {% set new_players = [] %}
+
+    {% for player in players %}
+        {% if player is not none %}
+            {% do new_players.append(player_anchor(player)) %}
+        {% endif %}
+    {% endfor %}
+
+    {{ new_players|join(', ')|safe }}
+{% endmacro %}
+
+{% macro records_table(records, show_server_col=true) %}
+<div class="table-scroll-wrapper">
+    <table>
+        <thead>
+            <tr>
+                {% if show_server_col %}
+                    <th>Server</th>
+                {% endif %}
+                <th>Pinged At</th>
+                <th>Online Players / Max.</th>
+                <th>Players</th>
+                <th>Latency</th>
+                <th>Version</th>
+                <th>Map Name</th>
+                <th>Game Mode</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+                {% set players = record.players[:10] %}
+
+                <tr>
+                    {% if show_server_col %}
+                        <td>{{ server_anchor(record.server) }}</td>
+                    {% endif %}
+                    <td>{{ record.timestamp }}</td>
+                    <td>{{ record.online_players }} / {{ record.max_players }}</td>
+                    <td>{% if record.players %}{{ player_list(record.players) }}{% else %}N/A{% endif %}</td>
+                    <td>{{ record.latency }}</td>
+                    <td>{{ record.version }} {% if record.version_brand is not none %}({{ record.version_brand }}){% endif %}</td>
+                    <td>{{ record.map_name if record.map_name is not none else 'N/A' }}</td>
+                    <td>{{ record.gamemode if record.gamemode is not none else 'N/A' }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endmacro %}
+
+{% macro players_table(players) %}
+<div class="table-scroll-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>UUID</th>
+                <th>Username</th>
+                <th>Premium?</th>
+                <th>First seen at</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for player in players %}
+                <tr>
+                    <td>{{ player.uuid }}</td>
+                    <td>{{ player_anchor(player) }}</td>
+                    <td>{{ 'Yes' if player.is_premium else 'No' }}</td>
+                    <td>{{ player.first_seen_at }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endmacro %}
+

@@ -39,6 +39,9 @@ async def ping_server(ip_port: str, server_type: str='java') -> t.Optional[dict[
         except Exception:
             query = None
 
+        if result.players.max == 0 or (query is not None and query.players.max == 0):
+            warn(f"Skipping `ip_port`, max. player count is 0, which means that it is offline")
+
         return dict(
             query=query is not None,
 
@@ -68,9 +71,8 @@ async def ping_server(ip_port: str, server_type: str='java') -> t.Optional[dict[
 
     else:
         warn(f"Unsupported server type: `{server_type}`")
+        return None
 
-
-    return None
 
 
 async def ping_all_and_save(at_once: int=200, verbose: bool=True):

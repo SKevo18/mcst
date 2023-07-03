@@ -1,27 +1,7 @@
 {% extends "_base.html" %}
 
+{% from "_macros.html" import records_table %}
+
 {% block content %}
-<div class="table-scroll-wrapper">
-    <table>
-        <thead>
-            <tr>
-                <th>Server</th>
-                <th>Pinged At</th>
-                <th>Online Players / Max</th>
-                <th>Players</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for record in data %}
-            {% set players = record["players"][:10]|list %}
-            <tr>
-                <td width="270px;">{{ record["server_id"] }}</td>
-                <td width="175px;">{{ record["timestamp"] }}</td>
-                <td width="50px;">{{ record["online_players"] }} / {{ record["max_players"] }}</td>
-                <td style="max-width: 300px;">{% if players|length > 0 %}{{ players|join(", ", attribute='username') }}{% else %}N/A{% endif %}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+{{ records_table(result) }}
 {% endblock content %}

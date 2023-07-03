@@ -1,47 +1,42 @@
 {% extends "_base.html" %}
 
+{% from "_macros.html" import server_anchor, records_table %}
+
+
 {% block content %}
 <div class="table-scroll-wrapper">
     <table>
         <thead>
             <tr>
+                <th>Server Name</th>
                 <th>Hostname</th>
                 <th>Discovered at</th>
                 <th>Source</th>
                 <th>Type</th>
+                <th>Records</th>
             </tr>
         </thead>
         <tbody>
-            {% for server in data %}
+            {% for server in result %}
                 <tr class="parent">
+                    <td>{{ server_anchor(server) }}</td>
                     <td>{{ server.ip_port }}</td>
                     <td>{{ server.discovered_at }}</td>
                     <td>{% if '//' in server.source %}<a href="{{ server.source }}">{{ server.source.split('/')[2] }}</a>{% else %}{{ server.source }}{% endif %}</td>
                     <td>{{ server.type }}</td>
+                    {% if server.records %}
+                        <td><button class="show-records">Show records</button></td>
+                    {% else %}
+                        <td style="font-style: italic;">No records</td>
+                    {% endif %}
                 </tr>
 
                 {% if server.records %}
-                <tr class="sub-row" style="display: none;">
-                    <td colspan="4">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Pinged At</th>
-                                    <th>Online Players / Max</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% set records = server.records[:10]|list %}
-                                {% for record in records %}
-                                    <tr>
-                                        <td>{{ record.timestamp }}</td>
-                                        <td>{{ record.online_players }} / {{ record.max_players }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
+                    <tr class="sub-row" style="display: none;">
+                        <td colspan="6">
+                            {{ records_table(server.records[:10], show_server_col=false) }}
+                        </td>
+                    </tr>
                 {% endif %}
             {% endfor %}
         </tbody>
@@ -50,15 +45,16 @@
 
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {
-        let mainRows = document.querySelectorAll('.parent');
+        let showRecords = document.querySelectorAll('.parent .show-records');
     
-        mainRows.forEach((mainRow) => {
-            mainRow.addEventListener('click', function() {
-                let subRow = this.nextElementSibling;
+        showRecords.forEach((showRecord) => {
+            showRecord.addEventListener('click', function() {
+                let subRow = this.parentElement.parentElement.nextElementSibling;
 
                 if (subRow.classList.contains("sub-row")) {
                     subRow.style.display = subRow.style.display === 'none' ? 'table-row' : 'none';
-                }
+                    this.innerText = this.innerText === 'Show records' ? 'Hide records' : 'Show records';
+                };
             });
         });
     });
